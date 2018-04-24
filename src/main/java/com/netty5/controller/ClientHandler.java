@@ -8,7 +8,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> {
 	
 	@Override
 	protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
-		System.out.println("½ÓÊÕµ½·şÎñ¶Ë·¢À´µÄÏûÏ¢:"+msg);
+		System.out.println("æ”¶åˆ°æœåŠ¡å™¨çš„æ¶ˆæ¯ä¸º:"+msg);
 		setMessage(msg);
 	}
 
@@ -22,7 +22,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> {
 	@Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
-        System.out.println("¿Í»§¶ËÒì³£:exceptionCaught");
+        System.out.println("å®¢æœç«¯çš„å¼‚å¸¸:exceptionCaught");
         ctx.close();
     }
 	
