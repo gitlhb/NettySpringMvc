@@ -21,6 +21,7 @@ import io.netty.channel.socket.SocketChannel;
 @Scope("prototype")
 @Sharable
 public class HelloHandler extends SimpleChannelInboundHandler<String> {
+
     protected volatile static List<SocketChannel> list = new ArrayList<SocketChannel>();
 
     @Override
@@ -28,12 +29,12 @@ public class HelloHandler extends SimpleChannelInboundHandler<String> {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.ALL_IDLE) {
-                ChannelFuture future = ctx.channel().writeAndFlush("空闲时间过长...");
+                ChannelFuture future = ctx.channel().writeAndFlush("Idle time out...");
                 future.addListener(new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture future) throws Exception {
-                        System.out.println("即将踢你下线：" + future.channel());
-                        if (future.channel().isOpen() && future.channel().isActive())
-                            future.channel().close();
+//                        System.out.println("out：" + future.channel());
+//                        if (future.channel().isOpen() && future.channel().isActive())
+//                            future.channel().close();
                     }
                 });
             }
@@ -43,7 +44,7 @@ public class HelloHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("新来一个连接:" + ctx.channel());
+        System.out.println("a new connection:" + ctx.channel());
         super.channelActive(ctx);
         SocketChannel channel = (SocketChannel) ctx.channel();
         if (channel.isActive()) {
@@ -52,22 +53,22 @@ public class HelloHandler extends SimpleChannelInboundHandler<String> {
             channel.close();
             list.remove(list.indexOf(channel));
         }
-        System.out.println("在线客户端数:" + list.size());
+        System.out.println("online count:" + list.size());
     }
 
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, String message) throws Exception {
-        System.out.println("接收到的消息:" + message);
+        System.out.println("recive message:" + message);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ChannelFuture writeAndFlush = ctx.channel().writeAndFlush(message + "->" + simpleDateFormat.format(new Date())).sync();
-        System.out.println("发送消息的结果:" + writeAndFlush.isSuccess());
+        System.out.println("send message result:" + writeAndFlush.isSuccess());
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         SocketChannel channel = (SocketChannel) ctx.channel();
         list.remove(list.indexOf(channel));
-        System.out.println("移除的客户端是" + channel.toString());
+        System.out.println("remove client is:" + channel.toString());
     }
 
 }

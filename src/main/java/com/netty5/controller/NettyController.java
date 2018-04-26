@@ -3,6 +3,9 @@ package com.netty5.controller;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.springframework.stereotype.Controller;
 
@@ -32,7 +35,9 @@ public class NettyController {
         Map<String, String> map = new HashMap<String, String>();
         System.out.println("inStr:" + instr);
         try {
-            ClientHandler c = new ClientHandler();
+            //声明一个同步锁
+            CountDownLatch lathc = new CountDownLatch(1);
+            ClientHandler c = new ClientHandler(lathc);
             String handler = sendMessage("127.0.0.1", 11111, instr, c);
             map.put("code", "0");
             map.put("msg", handler);
@@ -70,12 +75,14 @@ public class NettyController {
             if (future.isSuccess()) {
                 System.out.println("客户端连接成功，并向服务端发送消息:" + request);
                 ChannelFuture future2 = future.channel().writeAndFlush(request).sync();
+                future.awaitUninterruptibly();
                 System.out.println("客户端发送数据是否成功:" + future2.isSuccess());
             }
         } catch (Exception e) {
         }
         try {
-            Thread.sleep(50);
+            //使当前线程在锁存器倒计数至零之前一直等待，除非线程被中断
+            chand.getLathc().await(30, TimeUnit.SECONDS);//等待30S  如果还没有收到就是异常了
             message = chand.getMessage();
 
             if (future != null) {
@@ -83,6 +90,9 @@ public class NettyController {
             }
             group.shutdownGracefully();
         } catch (Exception e) {
+            if (e instanceof TimeoutException) {
+                System.out.println("time out error ");
+            }
             e.printStackTrace();
         }
 

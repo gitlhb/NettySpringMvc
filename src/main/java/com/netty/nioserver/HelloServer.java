@@ -55,7 +55,7 @@ public class HelloServer {
 					});
 					ChannelFuture future = server.bind(new InetSocketAddress(PORT)).sync();
 					if (future.isSuccess()) {
-						System.out.println("服务器启动成功...");
+						System.out.println("Srv start up success...");
 						future.channel().closeFuture().sync();
 					}
 				} catch (Exception e) {
@@ -63,7 +63,7 @@ public class HelloServer {
 				} finally {
 					parentGroup.shutdownGracefully();
 					childGroup.shutdownGracefully();
-					System.out.println("服务器关闭成功");
+					System.out.println("Srv close is success...");
 				}
 			}
 		});
