@@ -18,7 +18,7 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.socket.SocketChannel;
 
 @Component("helloHandler")
-@Scope("prototype")
+@Scope("prototype")//spring容器在进行输出prototype的bean对象时，会每次都重新生成一个新的对象给请求方
 @Sharable
 public class HelloHandler extends SimpleChannelInboundHandler<String> {
 
