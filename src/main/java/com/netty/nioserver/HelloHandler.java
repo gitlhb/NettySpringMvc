@@ -32,9 +32,10 @@ public class HelloHandler extends SimpleChannelInboundHandler<String> {
                 ChannelFuture future = ctx.channel().writeAndFlush("Idle time out...");
                 future.addListener(new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture future) throws Exception {
-//                        System.out.println("out：" + future.channel());
-//                        if (future.channel().isOpen() && future.channel().isActive())
-//                            future.channel().close();
+                        System.out.println("idle remove:" + future.channel());
+                        if (future.channel().isOpen() && future.channel().isActive()) {
+                            future.channel().close();
+                        }
                     }
                 });
             }
